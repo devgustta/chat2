@@ -8,26 +8,59 @@ public class Cliente {
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         String mensagem;
-        try{
+        try {
             Socket socket = new Socket("localhost", 55573);
 
-            DataInputStream entrada = new DataInputStream(socket.getInputStream());
-            DataOutputStream saida = new DataOutputStream(socket.getOutputStream());
-            
-            while (true) {
-                System.out.println("-=-=-=-=-=-=-=-=-=-=");
-                System.out.println("Escreva a mensagem: ");
-                mensagem = scanner.nextLine();
-                saida.writeUTF(mensagem);
+            // Inicia as threads de entrada e saída
+            Input inputThread = new Input(socket);
+            Output outputThread = new Output(socket);
+            inputThread.start();
+            outputThread.start();
 
-                String novaMensagem = entrada.readUTF();
-                System.out.println(novaMensagem);
-                
+            System.out.println("-=-=-=-=-=-=-=-=-=-=");
+            System.out.println("Escreva a mensagem: ");
+
+            while (true) {
+                mensagem = scanner.nextLine();
+                outputThread.enviarMensagem(mensagem);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static class Input extends Thread {
+        private final DataInputStream entrada;
 
+        // Construtor
+        public Input(Socket socket) throws IOException {
+            this.entrada = new DataInputStream(socket.getInputStream());
+        }
+
+        public void run() {
+            while (true) {
+                String novaMensagem;
+                try {
+                    novaMensagem = entrada.readUTF();
+                    System.out.println(novaMensagem);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+    }
+
+    public static class Output extends Thread {
+        private final DataOutputStream saida;
+
+        // Construtor
+        public Output(Socket socket) throws IOException {
+            this.saida = new DataOutputStream(socket.getOutputStream());
+        }
+
+        public void enviarMensagem(String mensagem) throws IOException {
+            saida.writeUTF(mensagem);
+        }
     }
 }
