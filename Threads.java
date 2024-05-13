@@ -9,12 +9,11 @@ public class Threads extends Thread {
 
     public Threads(Socket s) {
         this.socket = s;
-
-        try{
-             in = new DataInputStream(socket.getInputStream());
-             saida = new DataOutputStream(socket.getOutputStream());
-        }catch (IOException e){
-            e.printStackTrace();
+        try {
+            in = new DataInputStream(socket.getInputStream());
+            saida = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+        e.printStackTrace();
         }
     }
 
@@ -35,16 +34,20 @@ public class Threads extends Thread {
     }
 
     public void run() {
-        try {
+        while (true) {
+            try {
 
-            String mensagem = in.readUTF();
-            enviarMensagem(mensagem);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                String mensagem = in.readUTF();
+                System.out.println(mensagem);
+                enviarMensagem(mensagem);
 
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
         }
-
     }
 
 
