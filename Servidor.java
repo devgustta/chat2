@@ -11,7 +11,7 @@ public class Servidor {
 
     public static void main(String[] args) throws IOException{
         ServerSocket serverSocket = new ServerSocket(55573);
-        System.out.println("Porta 55572 aberta!!");
+        System.out.println("Porta 55573 aberta!!");
         System.out.println("Esperando cliente se conectar");
         try{
             while (true) {
@@ -28,11 +28,6 @@ public class Servidor {
 
     }
 
-    public static void enviarParaTodos(String mensagem){
-        for(Threads client: clients){
-            client.enviarMensagem(mensagem);
-        }
-    }
 
     public static List<Threads> getClients(){
         return clients;
